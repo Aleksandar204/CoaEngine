@@ -11,6 +11,7 @@
 
 #include <glEngine/texture.h>
 #include <glEngine/scene.h>
+#include <glEngine/shader.h>
 
 #include <vector>
 
@@ -18,6 +19,7 @@ class OpenGLEngine
 {
 private:
     GLFWwindow *window;
+    Shader* testing;
 
     uint32_t WINDOW_WIDTH = 1280;
     uint32_t WINDOW_HEIGHT = 720;
@@ -25,7 +27,7 @@ private:
     const bool ENABLE_RESIZING = false;
 
     Scene* current_scene;
-
+    
     void mainLoop()
     {
         while (!glfwWindowShouldClose(window))
@@ -36,7 +38,7 @@ private:
             for (unsigned int i = 0; i < current_scene->game_objects.size(); i++)
             {
                 current_scene->game_objects[i]->updateAndStart();
-                current_scene->game_objects[i]->draw();
+                render(current_scene->game_objects[i]);
             }
             
 
@@ -44,6 +46,24 @@ private:
             glfwPollEvents();
         }
         
+    }
+
+    void render(GameObject* go)
+    {
+        testing->use();
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model,go->position);
+        model *= glm::toMat4(glm::quat(glm::radians(go->rotation)));
+        glm::mat4 view          = current_scene->cam.getViewMatrix();
+        glm::mat4 projection    = glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        unsigned int modelLoc = glGetUniformLocation(testing->shader_id, "model");
+        unsigned int viewLoc  = glGetUniformLocation(testing->shader_id, "view");
+        unsigned int projectionLoc  = glGetUniformLocation(testing->shader_id, "projection");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+        glBindVertexArray(go->model.vao);
+        glDrawArrays(GL_TRIANGLES, 0 ,36);
     }
 
     void cleanup()
@@ -54,8 +74,8 @@ private:
     void initRenderer()
     {
         glfwInit();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_RESIZABLE, ENABLE_RESIZING);
         
@@ -75,13 +95,18 @@ private:
         }
         glEnable(GL_DEPTH_TEST);
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        testing = new Shader("/home/coa/Projects/Personal/OpenGLBetter/shaders/testshader.vert","/home/coa/Projects/Personal/OpenGLBetter/shaders/testshader.frag");
     }
 public:
     std::vector<Scene*> scenes;
 
-    void run()
+    OpenGLEngine()
     {
         initRenderer();
+    }
+
+    void run()
+    {
         mainLoop();
         cleanup();
     }

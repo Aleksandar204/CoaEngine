@@ -9,11 +9,15 @@ class Cube : public GameObject
     void Start() override
     {
         std::cout << "Im a cube!" << std::endl;
+        position.z = -2.0f;
+        
     }
     void Update() override
     {
-        std::cout << position.x << std::endl;
-        position.x += 1;
+        std::cout << rotation.x << std::endl;
+        // position.z -= 0.01f;
+        rotation.x += 1.0f;
+
     }
 };
 

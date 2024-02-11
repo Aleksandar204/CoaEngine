@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 class Camera
 {
@@ -21,9 +22,12 @@ public:
 
     glm::mat4 getViewMatrix()
     {
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, -position);
-        return view;
+        glm::quat quaternion = glm::quat(glm::radians(rotation));
+        glm::mat4 rotationMatrix = glm::toMat4(quaternion);
+        glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), -position);
+        glm::mat4 viewMatrix = rotationMatrix * translationMatrix;
+
+        return viewMatrix;
     }
 };
 

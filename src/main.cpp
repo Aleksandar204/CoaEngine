@@ -12,7 +12,8 @@ class Cube : public GameObject
     }
     void Update() override
     {
-        // std::cout << position.x << std::endl;
+        std::cout << position.x << std::endl;
+        position.x += 1;
     }
 };
 
@@ -21,7 +22,8 @@ int main()
     OpenGLEngine game;
 
     game.addScene("main_scene");
-    game.getScene("main_scene")->addGameObject(new Cube());
+    GameObject* c = new Cube();
+    game.getScene("main_scene")->addGameObject(c);
     game.setCurrentScene("main_scene");
     
 

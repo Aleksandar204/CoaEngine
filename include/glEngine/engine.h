@@ -38,6 +38,7 @@ private:
             for (unsigned int i = 0; i < current_scene->game_objects.size(); i++)
             {
                 current_scene->game_objects[i]->updateAndStart();
+                current_scene->cam.rotation.y +=1.0f;
                 render(current_scene->game_objects[i]);
             }
             

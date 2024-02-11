@@ -72,10 +72,6 @@ public:
     {
 
     }
-    void draw()
-    {
-        
-    }
 };
 
 #endif

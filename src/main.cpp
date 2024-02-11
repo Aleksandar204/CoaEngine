@@ -10,11 +10,11 @@ class Cube : public GameObject
     {
         std::cout << "Im a cube!" << std::endl;       
     }
-    void Update() override
+    void Update(float deltaTime) override
     {
         // std::cout << rotation.x << std::endl;
         // position.z -= 0.01f;
-        rotation.x += 1.0f;
+        rotation.x += 10.0f * deltaTime;
 
     }
 public:

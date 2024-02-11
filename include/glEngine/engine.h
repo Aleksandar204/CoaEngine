@@ -14,6 +14,7 @@
 #include <glEngine/shader.h>
 
 #include <vector>
+#include <cmath>
 
 class OpenGLEngine
 {
@@ -26,19 +27,27 @@ private:
     const bool ENABLE_VSYNC = true;
     const bool ENABLE_RESIZING = false;
 
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+
+
     Scene* current_scene;
     
     void mainLoop()
     {
         while (!glfwWindowShouldClose(window))
         {
+            float currentFrame = glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             for (unsigned int i = 0; i < current_scene->game_objects.size(); i++)
             {
-                current_scene->game_objects[i]->updateAndStart();
-                current_scene->cam.rotation.y +=1.0f;
+                current_scene->game_objects[i]->updateAndStart(deltaTime);
+                current_scene->cam.rotation.y = 30*sin(glfwGetTime());
                 render(current_scene->game_objects[i]);
             }
             

@@ -25,12 +25,8 @@ public:
         rotation = glm::vec3(0.0f,0.0f,0.0f);
         size = glm::vec3(1.0f,1.0f,1.0f);
     }
-    void draw()
-    {
-        model.draw();
-    }
 
-    void updateAndStart()
+    void updateAndStart(float deltaTime)
     {
         
         if(!startCalled)
@@ -38,12 +34,12 @@ public:
             Start();
             startCalled = true;
         }
-        Update();
+        Update(deltaTime);
     }
 
     virtual void Start() {}
 
-    virtual void Update() {}
+    virtual void Update(float deltaTime) {}
 
 private:
     bool startCalled = false;

@@ -3,26 +3,32 @@
 #include <glEngine/engine.h>
 #include <glEngine/scene.h>
 #include <glEngine/gameobject.h>
+#include <glEngine/component.h>
 
-class Cube : public GameObject
+#include <glEngine/time.h>
+
+class Movecube : public Component
 {
     void Start() override
     {
-        std::cout << "Im a cube!" << std::endl;       
+        std::cout << "I'm a rotating cube!" << std::endl;
     }
-    void Update(float deltaTime) override
-    {
-        // std::cout << rotation.x << std::endl;
-        // position.z -= 0.01f;
-        rotation.x += 10.0f * deltaTime;
 
-    }
-public:
-    Cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 si)
+    void Update() override
     {
-        position = pos;
-        rotation = rot;
-        size = si;
+        game_object->transform.rotation.y += 10.0f * getDeltaTime();
+    }
+};
+class Movecube2 : public Component
+{
+    void Start() override
+    {
+        std::cout << "I'm a rotating cube!" << std::endl;
+    }
+
+    void Update() override
+    {
+        game_object->transform.rotation.z += 20.0f * getDeltaTime();
     }
 };
 
@@ -31,10 +37,13 @@ int main()
     OpenGLEngine game;
 
     game.addScene("main_scene");
-    GameObject* c = new Cube(glm::vec3(1.5f,0.0f,-2.0f),glm::vec3(0.0f,45.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
-    GameObject* c2 = new Cube(glm::vec3(0.0f,0.0f,-2.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
+    GameObject* c = new GameObject(glm::vec3(-0.5f,0.0f,0.0f),glm::vec3(0.0f,45.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
+    GameObject* c2 = new GameObject(glm::vec3(1.5f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
+    c->addComponent(new Movecube());
+    c2->addComponent(new Movecube2());
+    c->addChild(c2);
     game.getScene("main_scene")->addGameObject(c);
-    game.getScene("main_scene")->addGameObject(c2);
+    // game.getScene("main_scene")->addGameObject(c2);
     game.setCurrentScene("main_scene");
     
 

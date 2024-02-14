@@ -12,6 +12,7 @@
 #include <glEngine/texture.h>
 #include <glEngine/scene.h>
 #include <glEngine/shader.h>
+#include <glEngine/time.h>
 
 #include <vector>
 #include <cmath>
@@ -24,7 +25,7 @@ private:
 
     uint32_t WINDOW_WIDTH = 1280;
     uint32_t WINDOW_HEIGHT = 720;
-    const bool ENABLE_VSYNC = true;
+    const bool ENABLE_VSYNC = false;
     const bool ENABLE_RESIZING = false;
 
     float deltaTime = 0.0f;
@@ -37,18 +38,30 @@ private:
     {
         while (!glfwWindowShouldClose(window))
         {
-            float currentFrame = glfwGetTime();
+            double currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
+            setDeltaTime(deltaTime);
+
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+            
+            std::vector<GameObject*> gos = current_scene->game_objects;
+            current_scene->cam.position.z = 2.0f;
+            // current_scene->cam.rotation.y += getDeltaTime() * 10.0f;
             for (unsigned int i = 0; i < current_scene->game_objects.size(); i++)
             {
-                current_scene->game_objects[i]->updateAndStart(deltaTime);
-                current_scene->cam.rotation.y = 30*sin(glfwGetTime());
-                render(current_scene->game_objects[i]);
+                current_scene->game_objects[i]->getAllChildren(&gos);
+            }
+            
+            
+
+            for (unsigned int i = 0; i < gos.size(); i++)
+            {
+                gos[i]->updateAndStart();
+
+                render(gos[i]);
             }
             
 
@@ -61,9 +74,11 @@ private:
     void render(GameObject* go)
     {
         testing->use();
+        // std::cout << go->components.size() << " ";
+        // std::cout << go->getGlobalPosition().x << " " << go->getGlobalPosition().y << " " << go->getGlobalPosition().z << std::endl;
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,go->position);
-        model *= glm::toMat4(glm::quat(glm::radians(go->rotation)));
+        model = glm::translate(model,go->getGlobalPosition());
+        model *= glm::toMat4(glm::quat(glm::radians(go->getGlobalRotation())));
         glm::mat4 view          = current_scene->cam.getViewMatrix();
         glm::mat4 projection    = glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         unsigned int modelLoc = glGetUniformLocation(testing->shader_id, "model");
@@ -74,6 +89,7 @@ private:
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
         glBindVertexArray(go->model.vao);
         glDrawArrays(GL_TRIANGLES, 0 ,36);
+        
     }
 
     void cleanup()

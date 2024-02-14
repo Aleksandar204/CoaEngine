@@ -25,7 +25,7 @@ private:
 
     uint32_t WINDOW_WIDTH = 1280;
     uint32_t WINDOW_HEIGHT = 720;
-    const bool ENABLE_VSYNC = false;
+    const bool ENABLE_VSYNC = true;
     const bool ENABLE_RESIZING = false;
 
     float deltaTime = 0.0f;
@@ -48,7 +48,7 @@ private:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
             std::vector<GameObject*> gos = current_scene->game_objects;
-            current_scene->cam.position.z = 2.0f;
+            current_scene->cam.transform.position.z += 0.5f * getDeltaTime();
             // current_scene->cam.rotation.y += getDeltaTime() * 10.0f;
             for (unsigned int i = 0; i < current_scene->game_objects.size(); i++)
             {
@@ -76,6 +76,7 @@ private:
         testing->use();
         // std::cout << go->components.size() << " ";
         // std::cout << go->getGlobalPosition().x << " " << go->getGlobalPosition().y << " " << go->getGlobalPosition().z << std::endl;
+        //std::cout << current_scene->cam.transform.rotation.x << " " << current_scene->cam.transform.rotation.y << " " << current_scene->cam.transform.rotation.z << std::endl;
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,go->getGlobalPosition());
         model *= glm::toMat4(glm::quat(glm::radians(go->getGlobalRotation())));

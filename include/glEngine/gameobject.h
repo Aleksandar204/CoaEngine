@@ -66,7 +66,6 @@ public:
 
     void updateAndStart()
     {
-        
         for (unsigned int i = 0; i < components.size(); i++)
         {
             if(!components[i]->started)

@@ -14,7 +14,7 @@
 class GameObject
 {
 public:
-    Model model;
+    Model* model = nullptr;
     Transform transform;
     std::vector<Component*> components;
     std::vector<GameObject*> children;

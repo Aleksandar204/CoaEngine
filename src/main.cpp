@@ -1,11 +1,6 @@
 #include <iostream>
 
 #include <glEngine/engine.h>
-#include <glEngine/scene.h>
-#include <glEngine/gameobject.h>
-#include <glEngine/component.h>
-
-#include <glEngine/time.h>
 
 class Movecube : public Component
 {
@@ -34,24 +29,23 @@ class Movecube2 : public Component
 
 int main()
 {
-    OpenGLEngine game;
-
-    game.addScene("main_scene");
-    GameObject* c = new GameObject(glm::vec3(-0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
-    GameObject* c2 = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
-    // c->addComponent(new Movecube());
-    // c2->addComponent(new Movecube2());
-    // c->addChild(c2);
-    game.getScene("main_scene")->addGameObject(c);
-    // game.getScene("main_scene")->addGameObject(c2);
-    game.setCurrentScene("main_scene");
-    
-
     try
     {
+        OpenGLEngine game;
+
+        game.addScene("main_scene");
+        GameObject* c = new GameObject(glm::vec3(-0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
+        // GameObject* c2 = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
+        c->model = new Model("/home/coa/Projects/Personal/OpenGLBetter/models/Survival_BackPack_2/Survival_BackPack_2.fbx");
+        // c->addComponent(new Movecube());
+        // c2->addComponent(new Movecube2());
+        // c->addChild(c2);
+        game.getScene("main_scene")->addGameObject(c);
+        // game.getScene("main_scene")->addGameObject(c2);
+        game.setCurrentScene("main_scene");
         game.run();
     }
-    catch (const std::exception &e)
+    catch (const std::runtime_error &e)
     {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;

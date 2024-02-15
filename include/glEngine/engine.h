@@ -11,8 +11,8 @@
 
 #include <glEngine/texture.h>
 #include <glEngine/scene.h>
-#include <glEngine/shader.h>
 #include <glEngine/time.h>
+#include <glEngine/gameobject.h>
 
 #include <vector>
 #include <cmath>
@@ -21,7 +21,6 @@ class OpenGLEngine
 {
 private:
     GLFWwindow *window;
-    Shader* testing;
 
     uint32_t WINDOW_WIDTH = 1280;
     uint32_t WINDOW_HEIGHT = 720;
@@ -48,7 +47,7 @@ private:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
             std::vector<GameObject*> gos = current_scene->game_objects;
-            current_scene->cam.transform.position.z += 0.5f * getDeltaTime();
+            // current_scene->cam.transform.position.z += 0.5f * getDeltaTime();
             // current_scene->cam.rotation.y += getDeltaTime() * 10.0f;
             for (unsigned int i = 0; i < current_scene->game_objects.size(); i++)
             {
@@ -60,8 +59,9 @@ private:
             for (unsigned int i = 0; i < gos.size(); i++)
             {
                 gos[i]->updateAndStart();
-
-                render(gos[i]);
+                
+                if(gos[i]->model != nullptr)
+                    render(gos[i]);
             }
             
 
@@ -73,24 +73,29 @@ private:
 
     void render(GameObject* go)
     {
-        testing->use();
-        // std::cout << go->components.size() << " ";
-        // std::cout << go->getGlobalPosition().x << " " << go->getGlobalPosition().y << " " << go->getGlobalPosition().z << std::endl;
-        //std::cout << current_scene->cam.transform.rotation.x << " " << current_scene->cam.transform.rotation.y << " " << current_scene->cam.transform.rotation.z << std::endl;
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,go->getGlobalPosition());
-        model *= glm::toMat4(glm::quat(glm::radians(go->getGlobalRotation())));
-        glm::mat4 view          = current_scene->cam.getViewMatrix();
-        glm::mat4 projection    = glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-        unsigned int modelLoc = glGetUniformLocation(testing->shader_id, "model");
-        unsigned int viewLoc  = glGetUniformLocation(testing->shader_id, "view");
-        unsigned int projectionLoc  = glGetUniformLocation(testing->shader_id, "projection");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
-        glBindVertexArray(go->model.vao);
-        glDrawArrays(GL_TRIANGLES, 0 ,36);
-        
+        Model* mod = go->model;
+        for (unsigned int i = 0; i < mod->meshes.size(); i++)
+        {
+            mod->meshes[i].shader.use();
+
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model,go->getGlobalPosition());
+            model *= glm::toMat4(glm::quat(glm::radians(go->getGlobalRotation())));
+            glm::mat4 view          = current_scene->cam.getViewMatrix();
+            glm::mat4 projection    = glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+            unsigned int modelLoc = glGetUniformLocation(mod->meshes[i].shader.shader_id, "model");
+            unsigned int viewLoc  = glGetUniformLocation(mod->meshes[i].shader.shader_id, "view");
+            unsigned int projectionLoc  = glGetUniformLocation(mod->meshes[i].shader.shader_id, "projection");
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+
+            glActiveTexture(GL_TEXTURE0);
+
+            glBindVertexArray(mod->meshes[i].getVAO());
+            glDrawElements(GL_TRIANGLES, mod->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+        }
     }
 
     void cleanup()
@@ -122,7 +127,6 @@ private:
         }
         glEnable(GL_DEPTH_TEST);
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-        testing = new Shader("/home/coa/Projects/Personal/OpenGLBetter/shaders/testshader.vert","/home/coa/Projects/Personal/OpenGLBetter/shaders/testshader.frag");
     }
 public:
     std::vector<Scene*> scenes;

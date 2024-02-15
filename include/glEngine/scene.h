@@ -12,7 +12,7 @@ private:
 
 public:
     std::string name;
-    std::vector<GameObject*> game_objects;
+    std::vector<GameObject*> game_objects = {&cam};
     Camera cam;
     void addGameObject(GameObject *go)
     {

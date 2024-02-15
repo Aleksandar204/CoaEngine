@@ -11,7 +11,7 @@ class Movecube : public Component
 
     void Update() override
     {
-        game_object->transform.rotation.y += 10.0f * getDeltaTime();
+        game_object->transform.rotation.y += 20.0f * getDeltaTime();
     }
 };
 class Movecube2 : public Component
@@ -34,13 +34,14 @@ int main()
         OpenGLEngine game;
 
         game.addScene("main_scene");
-        GameObject* c = new GameObject(glm::vec3(-0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
+        GameObject* c = new GameObject(glm::vec3(-0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.01f,0.01f,0.01f));
         // GameObject* c2 = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
         c->model = new Model("/home/coa/Projects/Personal/OpenGLBetter/models/Survival_BackPack_2/Survival_BackPack_2.fbx");
-        // c->addComponent(new Movecube());
+        c->addComponent(new Movecube());
         // c2->addComponent(new Movecube2());
         // c->addChild(c2);
         game.getScene("main_scene")->addGameObject(c);
+        game.getScene("main_scene")->cam.transform.position.z +=6.0f;
         // game.getScene("main_scene")->addGameObject(c2);
         game.setCurrentScene("main_scene");
         game.run();

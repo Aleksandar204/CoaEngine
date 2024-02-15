@@ -81,6 +81,7 @@ private:
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model,go->getGlobalPosition());
             model *= glm::toMat4(glm::quat(glm::radians(go->getGlobalRotation())));
+            model = glm::scale(model, go->transform.size);
             glm::mat4 view          = current_scene->cam.getViewMatrix();
             glm::mat4 projection    = glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
             unsigned int modelLoc = glGetUniformLocation(mod->meshes[i].shader.shader_id, "model");

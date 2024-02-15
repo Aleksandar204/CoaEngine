@@ -4,6 +4,8 @@
 #include <glEngine/shader.h>
 #include <glEngine/mesh.h>
 
+#include <cstring>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -16,11 +18,11 @@ public:
     void loadModel(std::string modelPath)
     {
         Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs | aiProcess_PreTransformVertices);
+        const aiScene *scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            std::cerr << "ERRR" << std::endl;
+            std::cerr << importer.GetErrorString() << std::endl;
             throw new std::runtime_error(importer.GetErrorString());
         }
         directory = modelPath.substr(0, modelPath.find_last_of('/'));
@@ -81,8 +83,35 @@ public:
                 indices.push_back(face.mIndices[j]);
             }
         }
-        
+
+        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        // std::cout << scene->mNumMaterials << std::endl;
+        std::vector<Texture*> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+        std::vector<Texture*> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+        std::vector<Texture*> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+        std::vector<Texture*> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+        textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
         return Mesh(vertices, indices, textures);
+    }
+
+    std::vector<Texture*> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+    {
+        std::vector<Texture*> textures;
+        // std::cout << mat->GetTextureCount(type) << std::endl;
+        for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+        {
+            aiString str;
+            mat->GetTexture(type, i, &str);
+            std::string filepath = directory + '/' + std::string(str.C_Str());
+            std::cout << str.C_Str() << std::endl;
+            Texture* tex = new Texture(filepath.c_str());
+            tex->type = typeName;
+            textures.push_back(tex);
+        }
+        return textures;
     }
 
     Model(std::string modelPath)

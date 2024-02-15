@@ -92,6 +92,8 @@ private:
             glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
 
             glActiveTexture(GL_TEXTURE0);
+            glUniform1i(glGetUniformLocation(mod->meshes[i].shader.shader_id, "texture_diffuse1"), 0);
+            glBindTexture(GL_TEXTURE_2D, mod->meshes[i].textures[0]->get_id());
 
             glBindVertexArray(mod->meshes[i].getVAO());
             glDrawElements(GL_TRIANGLES, mod->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);

@@ -25,13 +25,16 @@ public:
     Shader shader;
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture*> textures;
+    std::vector<Texture*> diffuseMaps;
+    std::vector<Texture*> specularMaps;
+    std::vector<Texture*> normalMaps;
+    std::vector<Texture*> heightMaps;
 
-    Mesh(std::vector<Vertex> vert, std::vector<unsigned int> ind, std::vector<Texture*> tex)
+    Mesh(std::vector<Vertex> vert, std::vector<unsigned int> ind, std::vector<Texture*> diffuse)
     {
         vertices = vert;
         indices = ind;
-        textures = tex;
+        diffuseMaps = diffuse;
 
         glGenVertexArrays(1,&VAO);
         glGenBuffers(1,&VBO);

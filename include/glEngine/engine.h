@@ -29,9 +29,6 @@ private:
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
-
-
-    Scene* current_scene;
     
     void mainLoop()
     {
@@ -82,18 +79,24 @@ private:
             model = glm::translate(model,go->getGlobalPosition());
             model *= glm::toMat4(glm::quat(glm::radians(go->getGlobalRotation())));
             model = glm::scale(model, go->transform.size);
-            glm::mat4 view          = current_scene->cam.getViewMatrix();
-            glm::mat4 projection    = glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-            unsigned int modelLoc = glGetUniformLocation(mod->meshes[i].shader.shader_id, "model");
-            unsigned int viewLoc  = glGetUniformLocation(mod->meshes[i].shader.shader_id, "view");
-            unsigned int projectionLoc  = glGetUniformLocation(mod->meshes[i].shader.shader_id, "projection");
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
 
-            glActiveTexture(GL_TEXTURE0);
-            glUniform1i(glGetUniformLocation(mod->meshes[i].shader.shader_id, "texture_diffuse1"), 0);
-            glBindTexture(GL_TEXTURE_2D, mod->meshes[i].textures[0]->get_id());
+            mod->meshes[i].shader.setMat4("model", model);
+            mod->meshes[i].shader.setMat4("view", current_scene->cam.getViewMatrix());
+            mod->meshes[i].shader.setMat4("projection", glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f));
+
+            unsigned int j,cnt;
+            for (j = 0, cnt = 1; j < mod->meshes[i].diffuseMaps.size(); j++)
+            {
+                glActiveTexture(GL_TEXTURE0 + j);
+                mod->meshes[i].shader.setInt("texture_diffuse" + std::to_string(cnt++),j);
+                mod->meshes[i].diffuseMaps[j]->use();
+            }
+            for (cnt = 1; j < mod->meshes[i].specularMaps.size(); j++)
+            {
+                glActiveTexture(GL_TEXTURE0 + j);
+                mod->meshes[i].shader.setInt("texture_specular" + std::to_string(cnt++),j);
+                mod->meshes[i].diffuseMaps[j]->use();
+            }
 
             glBindVertexArray(mod->meshes[i].getVAO());
             glDrawElements(GL_TRIANGLES, mod->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
@@ -113,7 +116,8 @@ private:
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_RESIZABLE, ENABLE_RESIZING);
-        
+        glfwWindowHint(GLFW_SAMPLES, 4);
+
         window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Engine", NULL, NULL);
         if (window == NULL)
         {
@@ -129,10 +133,12 @@ private:
                 throw new std::runtime_error("Failed to initialize GLAD");
         }
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     }
 public:
     std::vector<Scene*> scenes;
+    Scene* current_scene;
 
     OpenGLEngine()
     {

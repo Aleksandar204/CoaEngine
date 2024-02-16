@@ -32,17 +32,12 @@ int main()
         OpenGLEngine game;
 
         game.addScene("main_scene");
-        GameObject* c = new GameObject(glm::vec3(-0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(2.1f,2.1f,2.1f));
-        // GameObject* c2 = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f));
-        c->model = new Model("models/shrek/shrek.obj");
-        c->addComponent(new Movecube());
-        // c2->addComponent(new Movecube2());
-        // c->addChild(c2);
-        game.getScene("main_scene")->addGameObject(c);
-        game.getScene("main_scene")->cam.transform.position.z =3.0f;
-        game.getScene("main_scene")->cam.transform.position.y =1.5f;
-        // game.getScene("main_scene")->addGameObject(c2);
         game.setCurrentScene("main_scene");
+
+        GameObject* c = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.1f,1.1f,1.1f));
+        c->model = new Model("models/container/untitled.obj");
+        game.current_scene->addGameObject(c);
+        game.current_scene->cam.transform.position.z = 3.0f;
         game.run();
     }
     catch (const std::runtime_error &e)

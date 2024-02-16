@@ -47,12 +47,17 @@ public:
     {
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
-        std::vector<Texture*> textures;
+        std::vector<Texture*> diffuseMaps;
+        std::vector<Texture*> specularMaps;
+        std::vector<Texture*> normalMaps;
+        std::vector<Texture*> heightMaps;
 
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
             glm::vec3 vec;
+            
+
             vec.x = mesh->mVertices[i].x;
             vec.y = mesh->mVertices[i].y;
             vec.z = mesh->mVertices[i].z;
@@ -86,17 +91,18 @@ public:
 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         // std::cout << scene->mNumMaterials << std::endl;
-        std::vector<Texture*> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        std::vector<Texture*> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-        std::vector<Texture*> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-        std::vector<Texture*> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-        textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-        return Mesh(vertices, indices, textures);
+        diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+        heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+        return Mesh(vertices, indices, diffuseMaps);
     }
 
+    /// @brief Loads textures for a .obj model using the data from the .mtl file. Other filetypes require manual loading of textures.
+    /// @param mat 
+    /// @param type 
+    /// @param typeName 
+    /// @return std::vector<Texture*> textures
     std::vector<Texture*> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
     {
         std::vector<Texture*> textures;
@@ -114,6 +120,8 @@ public:
         return textures;
     }
 
+    /// @brief Loads a model using assimp located at the modelPath. Plz use obj files for comlpex objects, fbx has issues with files containing multiple meshes.
+    /// @param modelPath 
     Model(std::string modelPath)
     {
         loadModel(modelPath);

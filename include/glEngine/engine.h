@@ -163,7 +163,7 @@ void mainLoop()
         lastY = yp;
         mouse_moved = true;
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.5f, 0.8f, 0.9f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         std::vector<GameObject*> gos = current_scene->game_objects;

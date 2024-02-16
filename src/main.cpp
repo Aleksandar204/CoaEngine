@@ -55,7 +55,7 @@ int main()
         c->model = new Model("models/shrek/shrek.obj");
         GameObject* ground = new GameObject();
         ground->model = new Model("models/ground/ground.obj");
-        c->addComponent(new Spin());
+        // c->addComponent(new Spin());
         current_scene->addGameObject(c);
         current_scene->addGameObject(ground);
         current_scene->cam.addComponent(new FreeCam());

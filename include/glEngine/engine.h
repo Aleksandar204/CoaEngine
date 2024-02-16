@@ -88,13 +88,15 @@ private:
             for (j = 0, cnt = 1; j < mod->meshes[i].diffuseMaps.size(); j++)
             {
                 glActiveTexture(GL_TEXTURE0 + j);
-                mod->meshes[i].shader.setInt("texture_diffuse" + std::to_string(cnt++),j);
+                mod->meshes[i].shader.setInt("texture_diffuse" + std::to_string(cnt),j);
+                mod->meshes[i].shader.setInt("sample_texture_diffuse" + std::to_string(cnt++),1);
                 mod->meshes[i].diffuseMaps[j]->use();
             }
             for (cnt = 1; j < mod->meshes[i].specularMaps.size(); j++)
             {
                 glActiveTexture(GL_TEXTURE0 + j);
-                mod->meshes[i].shader.setInt("texture_specular" + std::to_string(cnt++),j);
+                mod->meshes[i].shader.setInt("texture_specular" + std::to_string(cnt),j);
+                mod->meshes[i].shader.setInt("sample_texture_specular" + std::to_string(cnt++),1);
                 mod->meshes[i].diffuseMaps[j]->use();
             }
 

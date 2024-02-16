@@ -3,7 +3,7 @@ out vec4 FragColor;
 
 in vec2 TexCoords;
 
-uniform int sample_texture_diffuse1 = 1;
+uniform int sample_texture_diffuse1 = 0;
 uniform sampler2D texture_diffuse1;
 
 uniform int sample_texture_specular1 = 0;

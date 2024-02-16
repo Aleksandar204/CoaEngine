@@ -35,9 +35,10 @@ int main()
         game.setCurrentScene("main_scene");
 
         GameObject* c = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.1f,1.1f,1.1f));
-        c->model = new Model("models/container/untitled.obj");
+        c->model = new Model("models/shrek/shrek.obj");
         game.current_scene->addGameObject(c);
         game.current_scene->cam.transform.position.z = 3.0f;
+        game.current_scene->cam.transform.position.y = 2.0f;
         game.run();
     }
     catch (const std::runtime_error &e)

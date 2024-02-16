@@ -59,7 +59,7 @@ public:
     }
     
 
-    Shader(const char* vertexPath = "/home/coa/Projects/Personal/OpenGLBetter/shaders/testshader.vert", const char* fragmentPath = "/home/coa/Projects/Personal/OpenGLBetter/shaders/testshader.frag")
+    Shader(const char* vertexPath = "shaders/basicShader.vert", const char* fragmentPath = "shaders/basicShader.frag")
     {
         std::string vertexCode;
         std::string fragmentCode;

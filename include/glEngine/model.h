@@ -90,7 +90,6 @@ public:
         }
 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        // std::cout << scene->mNumMaterials << std::endl;
         diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
@@ -112,7 +111,7 @@ public:
             aiString str;
             mat->GetTexture(type, i, &str);
             std::string filepath = directory + '/' + std::string(str.C_Str());
-            std::cout << str.C_Str() << std::endl;
+            std::cout << "Loading texture: " << filepath << std::endl;
             Texture* tex = new Texture(filepath.c_str());
             tex->type = typeName;
             textures.push_back(tex);

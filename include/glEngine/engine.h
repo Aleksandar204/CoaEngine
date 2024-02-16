@@ -24,7 +24,7 @@ Scene* current_scene;
 
 uint32_t WINDOW_WIDTH = 1280;
 uint32_t WINDOW_HEIGHT = 720;
-const bool ENABLE_VSYNC = false;
+const bool ENABLE_VSYNC = true;
 const bool ENABLE_RESIZING = false;
 
 float deltaTime = 0.0f;
@@ -40,6 +40,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     xp = xpos;
     yp = ypos;
+    if(firstMouse)
+    {
+        lastX = xp;
+        lastY = yp;
+        firstMouse = false;
+    }
 }
 
 void render(GameObject* go)
@@ -79,12 +85,10 @@ void render(GameObject* go)
         glBindVertexArray(0);
     }
 }
-
 void cleanup()
 {
     glfwTerminate();
 }
-
 void initRenderer()
 {
     glfwInit();
@@ -115,7 +119,6 @@ void initRenderer()
     glEnable(GL_MULTISAMPLE);
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
-
 void addScene(std::string scene_name)
 {
     scenes.push_back(new Scene(scene_name));
@@ -150,13 +153,7 @@ void mainLoop()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         setDeltaTime(deltaTime);
-
-        if (firstMouse)
-        {
-            lastX = xp;
-            lastY = yp;
-            firstMouse = false;
-        }
+        
         mouse_delta_x = xp - lastX;
         mouse_delta_y = lastY - yp;
         lastX = xp;
@@ -174,8 +171,6 @@ void mainLoop()
             current_scene->game_objects[i]->getAllChildren(&gos);
         }
         
-        
-
         for (unsigned int i = 0; i < gos.size(); i++)
         {
             gos[i]->updateAndStart();

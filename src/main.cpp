@@ -4,36 +4,41 @@
 
 class Spin : public Component
 {
-    void Start() override
-    {
-    }
-
     void Update() override
     {
         game_object->transform.rotation.y += 20.0f * getDeltaTime();
-        
     }
 };
 
 class FreeCam : public Component
 {
-    float speed = 2.0f;
+    float speed = 5.0f, sensitivity = 0.2f;
     void Update() override
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            game_object->transform.position.z -= speed * getDeltaTime();
+            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(speed);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            game_object->transform.position.z += speed * getDeltaTime();
+            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            game_object->transform.position.x -= speed * getDeltaTime();
+            game_object->transform.position += game_object->transform.right() * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            game_object->transform.position.x += speed * getDeltaTime();
+            game_object->transform.position += game_object->transform.right() * glm::vec3(getDeltaTime()) * glm::vec3(speed);
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
             game_object->transform.position.y += speed * getDeltaTime();
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
             game_object->transform.position.y -= speed * getDeltaTime();
         if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
+
+        game_object->transform.rotation.y += mouse_delta_x * sensitivity;
+        game_object->transform.rotation.x += mouse_delta_y * sensitivity;
+
+        if(game_object->transform.rotation.x > 80.0f)
+            game_object->transform.rotation.x = 80.0f;
+        if(game_object->transform.rotation.x < -80.0f)
+            game_object->transform.rotation.x = -80.0f;
+
+        // std::cout << game_object->transform.rotation.x << " " << game_object->transform.rotation.y << " " << game_object->transform.rotation.z << std::endl;
     }
 };
 

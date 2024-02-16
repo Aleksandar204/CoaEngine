@@ -30,6 +30,18 @@ const bool ENABLE_RESIZING = false;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+double lastX = 0.0f, lastY = 0.0f;
+bool firstMouse = true;
+
+double mouse_delta_x, mouse_delta_y;
+bool mouse_moved = false;
+double xp,yp;
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    xp = xpos;
+    yp = ypos;
+}
+
 void render(GameObject* go)
 {
     Model* mod = go->model;
@@ -92,6 +104,9 @@ void initRenderer()
     glfwMakeContextCurrent(window);
     glfwSwapInterval(ENABLE_VSYNC);
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
             throw new std::runtime_error("Failed to initialize GLAD");
@@ -136,6 +151,17 @@ void mainLoop()
         lastFrame = currentFrame;
         setDeltaTime(deltaTime);
 
+        if (firstMouse)
+        {
+            lastX = xp;
+            lastY = yp;
+            firstMouse = false;
+        }
+        mouse_delta_x = xp - lastX;
+        mouse_delta_y = lastY - yp;
+        lastX = xp;
+        lastY = yp;
+        mouse_moved = true;
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -156,6 +182,13 @@ void mainLoop()
             
             if(gos[i]->model != nullptr)
                 render(gos[i]);
+        }
+
+        if(mouse_moved)
+        {
+            mouse_moved = false;
+            mouse_delta_x = 0;
+            mouse_delta_y = 0;
         }
         
         glfwSwapBuffers(window);

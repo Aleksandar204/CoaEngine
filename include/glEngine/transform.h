@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 
 class Transform
 {
@@ -12,33 +14,19 @@ public:
 
     glm::vec3 forward()
     {
-        glm::vec3 front;
-        front.x = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-        front.y = sin(glm::radians(rotation.x));
-        front.z = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-        front = glm::normalize(front);
-        return front;
+        glm::vec4 f = glm::toMat4(glm::quat(glm::radians(rotation))) * glm::vec4(0,0,-1.0f,1.0f);
+        return glm::normalize(glm::vec3(f.x,f.y,f.z));
     }
     glm::vec3 up()
     {
-        glm::vec3 front;
-        front.x = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-        front.y = sin(glm::radians(rotation.x));
-        front.z = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-        front = glm::normalize(front);
-
+        glm::vec3 front = forward();
         glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
         glm::vec3 up = glm::normalize(glm::cross(right, front));
         return up;
     }
     glm::vec3 right()
     {
-        glm::vec3 front;
-        front.x = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-        front.y = sin(glm::radians(rotation.x));
-        front.z = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-        front = glm::normalize(front);
-
+        glm::vec3 front = forward();
         glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
         return right;
     }   

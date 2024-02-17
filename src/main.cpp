@@ -10,15 +10,23 @@ class Spin : public Component
     }
 };
 
+class Move: public Component
+{
+    void Update() override
+    {
+        game_object->transform.position.z -= 0.5f * getDeltaTime();
+    }
+};
+
 class FreeCam : public Component
 {
     float speed = 5.0f, sensitivity = 0.2f;
     void Update() override
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(speed);
+            game_object->transform.position += game_object->transform.forward() * glm::vec3(getDeltaTime()) * glm::vec3(speed);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
+            game_object->transform.position += game_object->transform.forward() * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             game_object->transform.position += game_object->transform.right() * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
@@ -30,7 +38,7 @@ class FreeCam : public Component
         if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        game_object->transform.rotation.y += mouse_delta_x * sensitivity;
+        game_object->transform.rotation.y -= mouse_delta_x * sensitivity;
         game_object->transform.rotation.x += mouse_delta_y * sensitivity;
 
         if(game_object->transform.rotation.x > 80.0f)
@@ -38,7 +46,7 @@ class FreeCam : public Component
         if(game_object->transform.rotation.x < -80.0f)
             game_object->transform.rotation.x = -80.0f;
 
-        // std::cout << game_object->transform.rotation.x << " " << game_object->transform.rotation.y << " " << game_object->transform.rotation.z << std::endl;
+        std::cout << game_object->transform.right().y << std::endl;
     }
 };
 
@@ -51,12 +59,19 @@ int main()
         addScene("main_scene");
         setCurrentScene("main_scene");
 
-        GameObject* c = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(2.1f,2.1f,2.1f));
+        GameObject* c = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(2.0f,2.0f,2.0f));
+        GameObject* box = new GameObject();
+        GameObject* box2 = new GameObject(glm::vec3(0.0f,0.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.2f,0.2f,0.2f));
+        box2->model = new Model("models/container/untitled.obj"); 
+        box->model = new Model("models/container/untitled.obj");
         c->model = new Model("models/shrek/shrek.obj");
         GameObject* ground = new GameObject();
         ground->model = new Model("models/ground/ground.obj");
-        // c->addComponent(new Spin());
+        box->addComponent(new Move());
+        c->addComponent(new Spin());
+        current_scene->cam.addChild(box2);
         current_scene->addGameObject(c);
+        current_scene->addGameObject(box);
         current_scene->addGameObject(ground);
         current_scene->cam.addComponent(new FreeCam());
         current_scene->cam.transform.position.z = 3.0f;

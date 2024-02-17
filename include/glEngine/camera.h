@@ -18,16 +18,6 @@ public:
         fov = f;
     }
 
-    // glm::mat4 getViewMatrix()
-    // {
-    //     glm::quat quaternion = glm::quat(glm::radians(transform.rotation));
-    //     glm::mat4 rotationMatrix = glm::toMat4(quaternion);
-    //     glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), -transform.position);
-    //     glm::mat4 viewMatrix = rotationMatrix * translationMatrix;
-
-    //     return viewMatrix;
-    // }
-
     glm::mat4 getViewMatrix() {
         return glm::lookAt(transform.position, transform.position + transform.forward(), transform.up());
     }

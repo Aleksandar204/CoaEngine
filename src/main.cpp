@@ -14,7 +14,7 @@ class Move: public Component
 {
     void Update() override
     {
-        game_object->transform.position.z -= 0.5f * getDeltaTime();
+        game_object->transform.position.z -= 0.3f * getDeltaTime();
     }
 };
 
@@ -24,9 +24,9 @@ class FreeCam : public Component
     void Update() override
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            game_object->transform.position += game_object->transform.forward() * glm::vec3(getDeltaTime()) * glm::vec3(speed);
+            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(speed);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            game_object->transform.position += game_object->transform.forward() * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
+            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             game_object->transform.position += game_object->transform.right() * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
@@ -45,8 +45,6 @@ class FreeCam : public Component
             game_object->transform.rotation.x = 80.0f;
         if(game_object->transform.rotation.x < -80.0f)
             game_object->transform.rotation.x = -80.0f;
-
-        std::cout << game_object->transform.right().y << std::endl;
     }
 };
 
@@ -60,16 +58,13 @@ int main()
         setCurrentScene("main_scene");
 
         GameObject* c = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(2.0f,2.0f,2.0f));
-        GameObject* box = new GameObject();
-        GameObject* box2 = new GameObject(glm::vec3(0.0f,0.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.2f,0.2f,0.2f));
-        box2->model = new Model("models/container/untitled.obj"); 
+        GameObject* box = new GameObject(glm::vec3(0.0f,1.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
         box->model = new Model("models/container/untitled.obj");
         c->model = new Model("models/shrek/shrek.obj");
         GameObject* ground = new GameObject();
         ground->model = new Model("models/ground/ground.obj");
         box->addComponent(new Move());
         c->addComponent(new Spin());
-        current_scene->cam.addChild(box2);
         current_scene->addGameObject(c);
         current_scene->addGameObject(box);
         current_scene->addGameObject(ground);

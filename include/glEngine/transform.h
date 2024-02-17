@@ -14,7 +14,13 @@ public:
 
     glm::vec3 forward()
     {
-        glm::vec4 f = glm::toMat4(glm::quat(glm::radians(rotation))) * glm::vec4(0,0,-1.0f,1.0f);
+        // glm::vec4 f =  glm::vec4(0,0,1.0f,-1.0f) * glm::toMat4(glm::quat(glm::radians(rotation)));
+        glm::vec4 f = glm::vec4(0.0f,0.0f,-1.0f,1.0f);
+        glm::mat4 rotmat(1.0f);
+        rotmat = glm::rotate(rotmat, glm::radians(rotation.y), glm::vec3(0.0f,1.0f,0.0f)); // Yaw
+        rotmat = glm::rotate(rotmat, glm::radians(rotation.x), glm::vec3(1.0f,0.0f,0.0f)); // Pitch
+        rotmat = glm::rotate(rotmat, glm::radians(rotation.z), glm::vec3(0.0f,0.0f,1.0f)); // Roll
+        f = rotmat * f;
         return glm::normalize(glm::vec3(f.x,f.y,f.z));
     }
     glm::vec3 up()

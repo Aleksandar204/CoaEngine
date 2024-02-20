@@ -81,7 +81,7 @@ void render(GameObject* go)
         }
         mod->meshes[i].shader.setVec3("light.position", glm::vec3(2.0f,10.0f,0.0f));
         mod->meshes[i].shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-        mod->meshes[i].shader.setVec3("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+        mod->meshes[i].shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
         mod->meshes[i].shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
         mod->meshes[i].shader.setFloat("material.shininess", 32.0f);

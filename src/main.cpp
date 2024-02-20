@@ -61,8 +61,8 @@ int main()
         GameObject* box = new GameObject(glm::vec3(0.0f,-9.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(10.0f,10.0f,10.0f));
         box->model = new Model("models/container/untitled.obj");
         c->model = new Model("models/container/untitled.obj");
-        GameObject* ground = new GameObject();
-        ground->model = new Model("models/ground/ground.obj");
+        GameObject* ground = new GameObject(glm::vec3(0.0f,1.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
+        ground->model = new Model("models/Survival_BackPack_2/Survival_BackPack_2.obj");
         box->addComponent(new Move());
         // c->addComponent(new Move());
         current_scene->addGameObject(c);

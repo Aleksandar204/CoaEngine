@@ -68,17 +68,24 @@ void render(GameObject* go)
         for (j = 0, cnt = 1; j < mod->meshes[i].diffuseMaps.size(); j++)
         {
             glActiveTexture(GL_TEXTURE0 + j);
-            mod->meshes[i].shader.setInt("texture_diffuse" + std::to_string(cnt),j);
-            mod->meshes[i].shader.setInt("sample_texture_diffuse" + std::to_string(cnt++),1);
+            mod->meshes[i].shader.setInt("material.texture_diffuse" + std::to_string(cnt),j);
+            mod->meshes[i].shader.setInt("material.sample_texture_diffuse" + std::to_string(cnt++),1);
             mod->meshes[i].diffuseMaps[j]->use();
         }
         for (cnt = 1; j < mod->meshes[i].specularMaps.size(); j++)
         {
             glActiveTexture(GL_TEXTURE0 + j);
-            mod->meshes[i].shader.setInt("texture_specular" + std::to_string(cnt),j);
-            mod->meshes[i].shader.setInt("sample_texture_specular" + std::to_string(cnt++),1);
+            mod->meshes[i].shader.setInt("material.texture_specular" + std::to_string(cnt),j);
+            mod->meshes[i].shader.setInt("material.sample_texture_specular" + std::to_string(cnt++),1);
             mod->meshes[i].diffuseMaps[j]->use();
         }
+        mod->meshes[i].shader.setVec3("light.position", glm::vec3(2.0f,10.0f,0.0f));
+        mod->meshes[i].shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+        mod->meshes[i].shader.setVec3("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+        mod->meshes[i].shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+        mod->meshes[i].shader.setFloat("material.shininess", 32.0f);
+        mod->meshes[i].shader.setVec3("viewPos", current_scene->cam.transform.position);
 
         glBindVertexArray(mod->meshes[i].getVAO());
         glDrawElements(GL_TRIANGLES, mod->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);

@@ -14,7 +14,7 @@ class Move: public Component
 {
     void Update() override
     {
-        game_object->transform.position.z -= 0.3f * getDeltaTime();
+        game_object->transform.position.y -= 0.3f * getDeltaTime();
     }
 };
 
@@ -57,14 +57,14 @@ int main()
         addScene("main_scene");
         setCurrentScene("main_scene");
 
-        GameObject* c = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(2.0f,2.0f,2.0f));
-        GameObject* box = new GameObject(glm::vec3(0.0f,1.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
+        GameObject* c = new GameObject(glm::vec3(2.0f,10.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
+        GameObject* box = new GameObject(glm::vec3(0.0f,-9.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(10.0f,10.0f,10.0f));
         box->model = new Model("models/container/untitled.obj");
-        c->model = new Model("models/shrek/shrek.obj");
+        c->model = new Model("models/container/untitled.obj");
         GameObject* ground = new GameObject();
         ground->model = new Model("models/ground/ground.obj");
         box->addComponent(new Move());
-        c->addComponent(new Spin());
+        // c->addComponent(new Move());
         current_scene->addGameObject(c);
         current_scene->addGameObject(box);
         current_scene->addGameObject(ground);

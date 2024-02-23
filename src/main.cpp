@@ -14,7 +14,7 @@ class Move: public Component
 {
     void Update() override
     {
-        game_object->transform.position.y -= 0.3f * getDeltaTime();
+        game_object->transform.position.y += 1.0f * getDeltaTime();
     }
 };
 
@@ -58,16 +58,16 @@ int main()
         setCurrentScene("main_scene");
 
         GameObject* c = new GameObject(glm::vec3(2.0f,10.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
-        GameObject* box = new GameObject(glm::vec3(0.0f,-9.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(10.0f,10.0f,10.0f));
-        box->model = new Model("models/container/untitled.obj");
+        GameObject* box = new GameObject(glm::vec3(0.0f,-9.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
+        box->model = new Model("models/ground/ground.obj");
         c->model = new Model("models/container/untitled.obj");
-        GameObject* ground = new GameObject(glm::vec3(0.0f,1.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
-        ground->model = new Model("models/Survival_BackPack_2/Survival_BackPack_2.obj");
-        box->addComponent(new Move());
+        // GameObject* ground = new GameObject(glm::vec3(0.0f,1.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
+        // ground->model = new Model("models/Survival_BackPack_2/Survival_BackPack_2.obj");
+        // box->addComponent(new Move());
         // c->addComponent(new Move());
         current_scene->addGameObject(c);
         current_scene->addGameObject(box);
-        current_scene->addGameObject(ground);
+        // current_scene->addGameObject(ground);
         current_scene->cam.addComponent(new FreeCam());
         current_scene->cam.transform.position.z = 3.0f;
         current_scene->cam.transform.position.y = 2.0f;

@@ -57,8 +57,8 @@ int main()
         addScene("main_scene");
         setCurrentScene("main_scene");
 
-        GameObject* c = new GameObject(glm::vec3(2.0f,10.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
-        GameObject* box = new GameObject(glm::vec3(0.0f,-9.0f,-1.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
+        GameObject* c = new GameObject(glm::vec3(0.0f,1.1f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
+        GameObject* box = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
         box->model = new Model("models/ground/ground.obj");
         c->model = new Model("models/container/untitled.obj");
         // GameObject* ground = new GameObject(glm::vec3(0.0f,1.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));

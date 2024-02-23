@@ -63,9 +63,9 @@ public:
             vec.z = mesh->mVertices[i].z;
             vertex.position = vec;
 
-            vec.x = mesh->mVertices[i].x;
-            vec.y = mesh->mVertices[i].y;
-            vec.z = mesh->mVertices[i].z;
+            vec.x = mesh->mNormals[i].x;
+            vec.y = mesh->mNormals[i].y;
+            vec.z = mesh->mNormals[i].z;
             vertex.normal = vec;
 
             if(mesh->mTextureCoords[0])

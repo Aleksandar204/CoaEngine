@@ -30,11 +30,14 @@ public:
     std::vector<Texture*> normalMaps;
     std::vector<Texture*> heightMaps;
 
-    Mesh(std::vector<Vertex> vert, std::vector<unsigned int> ind, std::vector<Texture*> diffuse)
+    Mesh(std::vector<Vertex> vert, std::vector<unsigned int> ind, std::vector<Texture*> diffuse, std::vector<Texture*> specular, std::vector<Texture*> normalmap, std::vector<Texture*> height)
     {
         vertices = vert;
         indices = ind;
         diffuseMaps = diffuse;
+        specularMaps = specular;
+        heightMaps = height;
+        normalMaps = normalmap;
 
         glGenVertexArrays(1,&VAO);
         glGenBuffers(1,&VBO);

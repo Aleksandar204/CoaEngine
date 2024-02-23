@@ -94,7 +94,7 @@ public:
         specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
         heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-        return Mesh(vertices, indices, diffuseMaps);
+        return Mesh(vertices, indices, diffuseMaps, specularMaps, normalMaps, heightMaps);
     }
 
     /// @brief Loads textures for a .obj model using the data from the .mtl file. Other filetypes require manual loading of textures.
@@ -111,7 +111,7 @@ public:
             aiString str;
             mat->GetTexture(type, i, &str);
             std::string filepath = directory + '/' + std::string(str.C_Str());
-            std::cout << "Loading texture: " << filepath << std::endl;
+            std::cout << "Loading texture: " << filepath << " as " << type <<std::endl;
             Texture* tex = new Texture(filepath.c_str());
             tex->type = typeName;
             textures.push_back(tex);

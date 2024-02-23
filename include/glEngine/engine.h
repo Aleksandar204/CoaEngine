@@ -64,7 +64,7 @@ void render(GameObject* go)
         mod->meshes[i].shader.setMat4("view", current_scene->cam.getViewMatrix());
         mod->meshes[i].shader.setMat4("projection", glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f));
 
-        unsigned int j,cnt;
+        unsigned int j,cnt,k;
         for (j = 0, cnt = 1; j < mod->meshes[i].diffuseMaps.size(); j++)
         {
             glActiveTexture(GL_TEXTURE0 + j);
@@ -72,14 +72,16 @@ void render(GameObject* go)
             mod->meshes[i].shader.setInt("material.sample_texture_diffuse" + std::to_string(cnt++),1);
             mod->meshes[i].diffuseMaps[j]->use();
         }
-        for (cnt = 1; j < mod->meshes[i].specularMaps.size(); j++)
+        
+        for (cnt = 1; j < mod->meshes[i].specularMaps.size() + mod->meshes[i].diffuseMaps.size(); j++)
         {
             glActiveTexture(GL_TEXTURE0 + j);
             mod->meshes[i].shader.setInt("material.texture_specular" + std::to_string(cnt),j);
             mod->meshes[i].shader.setInt("material.sample_texture_specular" + std::to_string(cnt++),1);
-            mod->meshes[i].diffuseMaps[j]->use();
+            
+            mod->meshes[i].specularMaps[j - mod->meshes[i].diffuseMaps.size()]->use();
         }
-        mod->meshes[i].shader.setVec3("light.position", glm::vec3(2.0f,10.0f,0.0f));
+        mod->meshes[i].shader.setVec3("light.position", glm::vec3(7.0f,10.0f,7.0f));
         mod->meshes[i].shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
         mod->meshes[i].shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
         mod->meshes[i].shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));

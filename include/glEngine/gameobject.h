@@ -90,6 +90,12 @@ public:
     {
         return glm::quat(glm::mat3(getGlobalModelMatrix()));
     }
+
+    glm::vec3 getGlobalRotationEuler()
+    {
+        return glm::eulerAngles(getGlobalRotation());
+    }
+
     glm::vec3 getGlobalScale()
     {
         return glm::vec3(glm::length(getGlobalModelMatrix()[0]), glm::length(getGlobalModelMatrix()[1]), glm::length(getGlobalModelMatrix()[2]));
@@ -140,7 +146,8 @@ public:
 
     void translateGlobal(glm::vec3 translation)
     {
-
+        glm::mat4 temp = glm::inverse(getGlobalModelMatrix()) * glm::translate(glm::mat4(1.0f),translation) * getGlobalModelMatrix();
+        modelMatrix *= temp;
     }
 
     void rotateGlobal(glm::quat rotation)
@@ -149,6 +156,61 @@ public:
         rotateLocal(temp);
     }
 
+    void setLocalRotation(glm::quat rotation)
+    {
+        glm::mat4 temp = glm::mat4(1.0f);
+        temp = glm::translate(temp, getLocalPosition());
+        temp *= glm::toMat4(rotation);
+        temp = glm::scale(temp,getLocalScale());
+        modelMatrix = temp;
+    }
+
+    void setLocalPosition(glm::vec3 position)
+    {
+        modelMatrix[3][0] = position.x;
+        modelMatrix[3][1] = position.y;
+        modelMatrix[3][2] = position.z;
+    }
+
+    void setLocalScale(glm::vec3 scale)
+    {
+        glm::mat4 temp = glm::mat4(1.0f);
+        temp = glm::translate(temp,getLocalPosition());
+        temp *= glm::toMat4(getLocalRotation());
+        temp = glm::scale(temp, scale);
+        modelMatrix = temp;
+    }
+
+    glm::vec3 getLocalPosition()
+    {
+        return glm::vec3(modelMatrix[3]);
+    }
+
+    glm::quat getLocalRotation()
+    {
+        return glm::toQuat(glm::mat3(modelMatrix));
+    }
+
+    glm::vec3 getLocalScale()
+    {
+        return glm::vec3(
+        glm::length(glm::vec3(modelMatrix[0])),
+        glm::length(glm::vec3(modelMatrix[1])),
+        glm::length(glm::vec3(modelMatrix[2]))
+        );
+    }
+
+    glm::vec3 getLocalRotationEuler()
+    {
+        glm::vec3 euler = glm::eulerAngles(getLocalRotation());
+        return euler;
+    }
+
+    void setLocalRotationEuler(glm::vec3 angles)
+    {
+        glm::quat q = glm::quat(angles);
+        setLocalRotation(q);
+    }
 
 private:
     

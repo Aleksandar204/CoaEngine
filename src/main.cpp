@@ -6,7 +6,8 @@ class Spin : public Component
 {
     void Update() override
     {
-        game_object->modelMatrix = glm::rotate(game_object->modelMatrix, glm::radians(30.0f * (float)getDeltaTime()), glm::vec3(0.0f,1.0f,0.0f));
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+            game_object->rotateLocalEuler(glm::vec3(0.0f,100.0f * getDeltaTime(), 0.0f));
     }
 };
 
@@ -100,18 +101,17 @@ int main()
         setCurrentScene("main_scene");
 
         GameObject* ground = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
-        ground->model = new Model("models/ground/ground.obj");
+        ground->model = new Model("models/ground/TestPlane.obj");
         current_scene->addGameObject(ground);
 
         GameObject* shrek = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,270.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
         shrek->model = new Model("models/shrek/shrek.obj");
-        // shrek->addComponent(new Spin());
+        shrek->addComponent(new Spin());
         current_scene->addGameObject(shrek);
 
         GameObject* c = new GameObject(glm::vec3(5.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
         c->addComponent(new Spin2());
         c->model = new Model("models/container/untitled.obj");
-        current_scene->addGameObject(c);
         shrek->addChild(c);
 
         current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,0.0f,0.0f));

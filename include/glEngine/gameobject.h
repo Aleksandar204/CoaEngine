@@ -128,10 +128,27 @@ public:
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rot.z), glm::vec3(0.0f,0.0f,1.0f));
     }
 
-    void scaleLocal()
+    void rotateLocal(glm::quat rot)
+    {
+        modelMatrix *= glm::toMat4(rot);
+    }
+
+    void scaleLocal(glm::vec3 sc)
+    {
+        modelMatrix = glm::scale(modelMatrix,sc);
+    }
+
+    void translateGlobal(glm::vec3 translation)
     {
 
     }
+
+    void rotateGlobal(glm::quat rotation)
+    {
+        glm::quat temp = glm::inverse(getGlobalRotation()) * rotation * getGlobalRotation();
+        rotateLocal(temp);
+    }
+
 
 private:
     

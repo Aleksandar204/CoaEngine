@@ -6,7 +6,15 @@ class Spin : public Component
 {
     void Update() override
     {
-        game_object->modelMatrix = glm::rotate(game_object->modelMatrix, glm::radians(20.0f * (float)getDeltaTime()), glm::vec3(0.0f,1.0f,0.0f));
+        game_object->modelMatrix = glm::rotate(game_object->modelMatrix, glm::radians(30.0f * (float)getDeltaTime()), glm::vec3(0.0f,1.0f,0.0f));
+    }
+};
+
+class Spin2 : public Component
+{
+    void Update() override
+    {
+        game_object->rotateGlobal(glm::quat(glm::vec3(0.0f,0.0f,2.0f * getDeltaTime())));
     }
 };
 
@@ -37,14 +45,25 @@ class FreeCam : public Component
             game_object->translateLocal(glm::vec3(0.0f,-getDeltaTime()*speed, 0.0f));
         if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
-
-        float mousemovex = mouse_delta_y * sensitivity,mousemovey = -mouse_delta_x * sensitivity;
         // if(glm::eulerAngles(game_object->getGlobalRotation()).x > glm::radians(80.0f))
         //     mousemovex = 0;
         // if(glm::eulerAngles(game_object->getGlobalRotation()).x < glm::radians(-80.0f))
         //     mousemovex = 0;
-        game_object->rotateLocalEuler(glm::vec3(mousemovex, mousemovey, 0.0f));
-        //std::cout << game_object->getGlobalForward().x << " " << game_object->getGlobalForward().y << " " << game_object->getGlobalForward().z << std::endl;
+
+        float mousemovex = mouse_delta_y * sensitivity;
+        float mousemovey = -mouse_delta_x * sensitivity;
+
+        // Create quaternions for x and y rotations
+        glm::quat xRotation = glm::angleAxis(glm::radians(mousemovex), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::quat yRotation = glm::angleAxis(glm::radians(mousemovey), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        // // Combine rotations
+        // glm::quat totalRotation = xRotation * yRotation;
+
+        // Apply rotation to the camera
+        game_object->rotateGlobal(yRotation);
+        game_object->rotateLocal(xRotation);
+
     }
 };
 
@@ -57,22 +76,26 @@ int main()
         addScene("main_scene");
         setCurrentScene("main_scene");
 
-        GameObject* c = new GameObject(glm::vec3(0.0f,1.1f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
-        c->addComponent(new Spin());
-        c->model = new Model("models/container/untitled.obj");
-        current_scene->addGameObject(c);
-
         GameObject* ground = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
         ground->model = new Model("models/ground/ground.obj");
         current_scene->addGameObject(ground);
 
-        GameObject* shrek = new GameObject(glm::vec3(3.0f,0.0f,3.0f),glm::vec3(45.0f,0.0f,0.0f),glm::vec3(2.0f,2.0f,2.0f));
+        GameObject* shrek = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,180.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
         shrek->model = new Model("models/shrek/shrek.obj");
-        shrek->addComponent(new Spin());
+        // shrek->addComponent(new Spin());
         current_scene->addGameObject(shrek);
-        
-        current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,3.0f,6.0f));
+
+        GameObject* c = new GameObject(glm::vec3(5.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
+        c->addComponent(new Spin2());
+        c->model = new Model("models/container/untitled.obj");
+        current_scene->addGameObject(c);
+        shrek->addChild(c);
+
+
+        current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,0.0f,0.0f));
         current_scene->cam.addComponent(new FreeCam());
+        current_scene->cam.translateLocal(glm::vec3(0.0f,5.0f,0.0f));
+        // current_scene->cam.rotateLocalEuler(glm::vec3(-90.0f,0.0f,0.0f));
         mainLoop();
         cleanup();
     }

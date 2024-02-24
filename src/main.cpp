@@ -6,7 +6,7 @@ class Spin : public Component
 {
     void Update() override
     {
-        game_object->transform.rotation.y += 20.0f * getDeltaTime();
+        game_object->modelMatrix = glm::rotate(game_object->modelMatrix, glm::radians(20.0f * (float)getDeltaTime()), glm::vec3(0.0f,1.0f,0.0f));
     }
 };
 
@@ -14,7 +14,7 @@ class Move: public Component
 {
     void Update() override
     {
-        game_object->transform.position.y += 1.0f * getDeltaTime();
+        game_object->translateLocal(glm::vec3(getDeltaTime(),0.0f,0.0f));
     }
 };
 
@@ -24,27 +24,27 @@ class FreeCam : public Component
     void Update() override
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(speed);
+            game_object->translateLocal(glm::vec3(0.0f,0.0f, getDeltaTime() * -speed));
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            game_object->transform.position += glm::normalize(glm::vec3(game_object->transform.forward().x,0.0f,game_object->transform.forward().z)) * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
+            game_object->translateLocal(glm::vec3(0.0f,0.0f, getDeltaTime() * speed));
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            game_object->transform.position += game_object->transform.right() * glm::vec3(getDeltaTime()) * glm::vec3(-speed);
+            game_object->translateLocal(glm::vec3(getDeltaTime() * -speed,0.0f,0.0f));
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            game_object->transform.position += game_object->transform.right() * glm::vec3(getDeltaTime()) * glm::vec3(speed);
+            game_object->translateLocal(glm::vec3(getDeltaTime() * speed,0.0f,0.0f));
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-            game_object->transform.position.y += speed * getDeltaTime();
+            game_object->translateLocal(glm::vec3(0.0f,getDeltaTime()*speed, 0.0f));
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-            game_object->transform.position.y -= speed * getDeltaTime();
+            game_object->translateLocal(glm::vec3(0.0f,-getDeltaTime()*speed, 0.0f));
         if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        game_object->transform.rotation.y -= mouse_delta_x * sensitivity;
-        game_object->transform.rotation.x += mouse_delta_y * sensitivity;
-
-        if(game_object->transform.rotation.x > 80.0f)
-            game_object->transform.rotation.x = 80.0f;
-        if(game_object->transform.rotation.x < -80.0f)
-            game_object->transform.rotation.x = -80.0f;
+        float mousemovex = mouse_delta_y * sensitivity,mousemovey = -mouse_delta_x * sensitivity;
+        // if(glm::eulerAngles(game_object->getGlobalRotation()).x > glm::radians(80.0f))
+        //     mousemovex = 0;
+        // if(glm::eulerAngles(game_object->getGlobalRotation()).x < glm::radians(-80.0f))
+        //     mousemovex = 0;
+        game_object->rotateLocalEuler(glm::vec3(mousemovex, mousemovey, 0.0f));
+        //std::cout << game_object->getGlobalForward().x << " " << game_object->getGlobalForward().y << " " << game_object->getGlobalForward().z << std::endl;
     }
 };
 
@@ -58,19 +58,21 @@ int main()
         setCurrentScene("main_scene");
 
         GameObject* c = new GameObject(glm::vec3(0.0f,1.1f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
-        GameObject* box = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
-        box->model = new Model("models/ground/ground.obj");
+        c->addComponent(new Spin());
         c->model = new Model("models/container/untitled.obj");
-        // GameObject* ground = new GameObject(glm::vec3(0.0f,1.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
-        // ground->model = new Model("models/Survival_BackPack_2/Survival_BackPack_2.obj");
-        // box->addComponent(new Move());
-        // c->addComponent(new Move());
         current_scene->addGameObject(c);
-        current_scene->addGameObject(box);
-        // current_scene->addGameObject(ground);
+
+        GameObject* ground = new GameObject(glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
+        ground->model = new Model("models/ground/ground.obj");
+        current_scene->addGameObject(ground);
+
+        GameObject* shrek = new GameObject(glm::vec3(3.0f,0.0f,3.0f),glm::vec3(45.0f,0.0f,0.0f),glm::vec3(2.0f,2.0f,2.0f));
+        shrek->model = new Model("models/shrek/shrek.obj");
+        shrek->addComponent(new Spin());
+        current_scene->addGameObject(shrek);
+        
+        current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,3.0f,6.0f));
         current_scene->cam.addComponent(new FreeCam());
-        current_scene->cam.transform.position.z = 3.0f;
-        current_scene->cam.transform.position.y = 2.0f;
         mainLoop();
         cleanup();
     }

@@ -9,17 +9,10 @@
 class Camera: public GameObject
 {
 public:
-    float fov;
-    Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f), float f = 75.0f)
-    {
-        transform.position = pos;
-        transform.rotation = rot;
-        transform.size = glm::vec3(1.0f,1.0f,1.0f);
-        fov = f;
-    }
+    float fov = 90;
 
     glm::mat4 getViewMatrix() {
-        return glm::lookAt(transform.position, transform.position + transform.forward(), transform.up());
+        return glm::lookAt(getGlobalPosition(), getGlobalPosition() + getGlobalForward(), getGlobalUp());
     }
 };
 

@@ -55,12 +55,8 @@ void render(GameObject* go)
     {
         mod->meshes[i].shader.use();
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,go->getGlobalPosition());
-        model *= glm::toMat4(glm::quat(glm::radians(go->getGlobalRotation())));
-        model = glm::scale(model, go->transform.size);
 
-        mod->meshes[i].shader.setMat4("model", model);
+        mod->meshes[i].shader.setMat4("model", go->getGlobalModelMatrix());
         mod->meshes[i].shader.setMat4("view", current_scene->cam.getViewMatrix());
         mod->meshes[i].shader.setMat4("projection", glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f));
 
@@ -81,13 +77,13 @@ void render(GameObject* go)
             
             mod->meshes[i].specularMaps[j - mod->meshes[i].diffuseMaps.size()]->use();
         }
-        mod->meshes[i].shader.setVec3("light.position", glm::vec3(7.0f,10.0f,7.0f));
+        mod->meshes[i].shader.setVec3("light.position", glm::vec3(7.0f,2.0f,7.0f));
         mod->meshes[i].shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
         mod->meshes[i].shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
         mod->meshes[i].shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
         mod->meshes[i].shader.setFloat("material.shininess", 32.0f);
-        mod->meshes[i].shader.setVec3("viewPos", current_scene->cam.transform.position);
+        mod->meshes[i].shader.setVec3("viewPos", current_scene->cam.getGlobalPosition());
 
         glBindVertexArray(mod->meshes[i].getVAO());
         glDrawElements(GL_TRIANGLES, mod->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);

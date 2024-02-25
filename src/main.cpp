@@ -102,7 +102,7 @@ int main()
         current_scene->addGameObject(shrek);
 
         GameObject* c = new GameObject(glm::vec3(3.0f,0.51f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
-        c->model = new Model("models/container/untitled.obj");
+        c->model = new Model("models/container/sphere.obj", Shader("shaders/basicUnlit.vert", "shaders/basicUnlit.frag"));
         shrek->addChild(c);
         c->addComponent(new PointLight());
 

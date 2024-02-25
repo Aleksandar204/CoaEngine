@@ -59,7 +59,7 @@ public:
     }
     
 
-    Shader(const char* vertexPath = "shaders/basicShader.vert", const char* fragmentPath = "shaders/basicShader.frag")
+    Shader(const char* vertexPath = "shaders/basicLit.vert", const char* fragmentPath = "shaders/basicLit.frag")
     {
         std::string vertexCode;
         std::string fragmentCode;

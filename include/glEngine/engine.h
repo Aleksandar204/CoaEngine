@@ -175,6 +175,7 @@ void initRenderer()
     }
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_CULL_FACE);
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 void addScene(std::string scene_name)

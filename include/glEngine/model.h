@@ -120,10 +120,22 @@ public:
     }
 
     /// @brief Loads a model using assimp located at the modelPath. Plz use obj files for comlpex objects, fbx has issues with files containing multiple meshes.
-    /// @param modelPath 
+    /// @param modelPath Path of the model file
     Model(std::string modelPath)
     {
         loadModel(modelPath);
+    }
+    /// @brief Loads a model using assimp located at the modelPath and gives every mesh the specified shader
+    /// @param modelPath Path of the model file
+    /// @param sh Default shader for meshes of this model
+    Model(std::string modelPath, Shader sh)
+    {
+        loadModel(modelPath);
+        for (unsigned int i = 0; i < meshes.size(); i++)
+        {
+            meshes[i].shader = sh;
+        }
+        
     }
     ~Model()
     {

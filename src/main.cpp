@@ -11,14 +11,6 @@ class Spin : public Component
     }
 };
 
-class Spin2 : public Component
-{
-    void Update() override
-    {
-        game_object->rotateGlobal(glm::quat(glm::vec3(0.0f,0.0f,2.0f * getDeltaTime())));
-    }
-};
-
 class Move: public Component
 {
     void Update() override
@@ -109,13 +101,14 @@ int main()
         shrek->addComponent(new Spin());
         current_scene->addGameObject(shrek);
 
-        GameObject* c = new GameObject(glm::vec3(5.0f,0.0f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1.0f,1.0f,1.0f));
-        c->addComponent(new Spin2());
+        GameObject* c = new GameObject(glm::vec3(3.0f,0.51f,0.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
         c->model = new Model("models/container/untitled.obj");
         shrek->addChild(c);
+        c->addComponent(new PointLight());
 
         current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,0.0f,0.0f));
         current_scene->cam.addComponent(new FreeCam());
+
         mainLoop();
         cleanup();
     }

@@ -11,6 +11,8 @@
 #include <glEngine/model.h>
 #include <glEngine/component.h>
 
+class Scene;
+
 class GameObject
 {
 public:
@@ -18,6 +20,7 @@ public:
     std::vector<Component*> components;
     std::vector<GameObject*> children;
     GameObject* parent = nullptr;
+    Scene* myscene = nullptr;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     GameObject(glm::vec3 pos, glm::vec3 rot, glm::vec3 si)
     {
@@ -35,6 +38,7 @@ public:
     void addComponent(Component* component)
     {
         component->game_object = this;
+        component->current_scene = myscene;
         components.push_back(component);
     }
 
@@ -95,7 +99,7 @@ public:
     {
         return glm::eulerAngles(getGlobalRotation());
     }
-
+    
     glm::vec3 getGlobalScale()
     {
         return glm::vec3(glm::length(getGlobalModelMatrix()[0]), glm::length(getGlobalModelMatrix()[1]), glm::length(getGlobalModelMatrix()[2]));

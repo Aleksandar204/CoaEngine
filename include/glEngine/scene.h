@@ -16,6 +16,7 @@ public:
     Camera cam;
     void addGameObject(GameObject *go)
     {
+        go->myscene=this;
         game_objects.push_back(go);
     }
     Scene(std::string n)

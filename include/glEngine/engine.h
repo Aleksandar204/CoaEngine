@@ -13,6 +13,8 @@
 #include <glEngine/scene.h>
 #include <glEngine/time.h>
 #include <glEngine/gameobject.h>
+#include <glEngine/pointlight.h>
+#include <glEngine/directionallight.h>
 
 #include <vector>
 #include <cmath>
@@ -48,6 +50,39 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 }
 
+std::vector<DirectionalLight*> dirLights;
+std::vector<PointLight*> pointLights;
+
+std::vector<DirectionalLight*> getDirectionalLights()
+{
+    std::vector<DirectionalLight*> temp;
+    for (int i = 0; i < current_scene->game_objects.size(); i++)
+    {
+        for (int j = 0; j < current_scene->game_objects[i]->components.size(); j++)
+        {
+            if(DirectionalLight* p = dynamic_cast<DirectionalLight*>(current_scene->game_objects[i]->components[j]))
+                temp.push_back(p);
+        }
+        
+    }
+    return temp;
+}
+
+std::vector<PointLight*> getPointLights()
+{
+    std::vector<PointLight*> temp;
+    for (int i = 0; i < current_scene->game_objects.size(); i++)
+    {
+        for (int j = 0; j < current_scene->game_objects[i]->components.size(); j++)
+        {
+            if(PointLight* p = dynamic_cast<PointLight*>(current_scene->game_objects[i]->components[j]))
+                temp.push_back(p);
+        }
+        
+    }
+    return temp;
+}
+
 void render(GameObject* go)
 {
     Model* mod = go->model;
@@ -77,10 +112,28 @@ void render(GameObject* go)
             
             mod->meshes[i].specularMaps[j - mod->meshes[i].diffuseMaps.size()]->use();
         }
-        mod->meshes[i].shader.setVec3("light.position", glm::vec3(7.0f,2.0f,7.0f));
-        mod->meshes[i].shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-        mod->meshes[i].shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-        mod->meshes[i].shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+        for (int dirL = 0; dirL < dirLights.size(); dirL++)
+        {
+            mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].direction", dirLights[dirL]->direction);
+
+            mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].ambient", dirLights[dirL]->ambient);
+            mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].diffuse", dirLights[dirL]->diffuse);
+            mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].specular", dirLights[dirL]->specular);
+        }
+        for (int pointL = 0; pointL < pointLights.size(); pointL++)
+        {
+            mod->meshes[i].shader.setVec3("pointLights[" + std::to_string(pointL) + "].position", pointLights[pointL]->game_object->getGlobalPosition());
+
+            mod->meshes[i].shader.setFloat("pointLights[" + std::to_string(pointL) + "].constant", pointLights[pointL]->constant);
+            mod->meshes[i].shader.setFloat("pointLights[" + std::to_string(pointL) + "].linear", pointLights[pointL]->linear);
+            mod->meshes[i].shader.setFloat("pointLights[" + std::to_string(pointL) + "].quadratic", pointLights[pointL]->quadratic);
+
+            mod->meshes[i].shader.setVec3("pointLights[" + std::to_string(pointL) + "].ambient", pointLights[pointL]->ambient);
+            mod->meshes[i].shader.setVec3("pointLights[" + std::to_string(pointL) + "].diffuse", pointLights[pointL]->diffuse);
+            mod->meshes[i].shader.setVec3("pointLights[" + std::to_string(pointL) + "].specular", pointLights[pointL]->specular);
+        }
+        
 
         mod->meshes[i].shader.setFloat("material.shininess", 32.0f);
         mod->meshes[i].shader.setVec3("viewPos", current_scene->cam.getGlobalPosition());
@@ -175,14 +228,29 @@ void mainLoop()
         {
             current_scene->game_objects[i]->getAllChildren(&gos);
         }
-        
+        std::vector<DirectionalLight*> temp;
+        std::vector<PointLight*> temp2;
         for (unsigned int i = 0; i < gos.size(); i++)
         {
             gos[i]->updateAndStart();
+
+            for (int j = 0; j < gos[i]->components.size(); j++)
+            {
+                if(DirectionalLight* p = dynamic_cast<DirectionalLight*>(gos[i]->components[j]))
+                    temp.push_back(p);
+            }
+
+            for (int j = 0; j < gos[i]->components.size(); j++)
+            {
+                if(PointLight* p = dynamic_cast<PointLight*>(gos[i]->components[j]))
+                    temp2.push_back(p);
+            }
             
             if(gos[i]->model != nullptr)
                 render(gos[i]);
         }
+        dirLights = temp;
+        pointLights = temp2;
 
         if(mouse_moved)
         {

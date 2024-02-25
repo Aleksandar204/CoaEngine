@@ -2,6 +2,7 @@
 #define COMPONENT_H
 
 class GameObject;
+class Scene;
 
 class Component
 {
@@ -12,6 +13,7 @@ public:
 
     virtual void Update() {}
     GameObject* game_object;
+    Scene* current_scene;
 };
 
 #endif

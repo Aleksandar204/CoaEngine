@@ -106,6 +106,10 @@ int main()
         shrek->addChild(c);
         c->addComponent(new PointLight());
 
+        GameObject* grass = new GameObject(glm::vec3(3.0f,0.51f,3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
+        grass->model = new Model("models/ground/grass.obj");
+        current_scene->addGameObject(grass);
+
         current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,0.0f,0.0f));
         current_scene->cam.addComponent(new FreeCam());
 

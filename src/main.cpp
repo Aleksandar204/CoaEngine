@@ -110,6 +110,10 @@ int main()
         grass->model = new Model("models/ground/grass.obj");
         current_scene->addGameObject(grass);
 
+        GameObject* sun = new GameObject();
+        sun->addComponent(new DirectionalLight());
+        current_scene->addGameObject(sun);
+
         current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,0.0f,0.0f));
         current_scene->cam.addComponent(new FreeCam());
 

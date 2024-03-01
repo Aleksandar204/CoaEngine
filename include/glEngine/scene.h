@@ -4,6 +4,8 @@
 #include <glEngine/gameobject.h>
 #include <glEngine/camera.h>
 
+#include <glEngine/skybox.h>
+
 #include <vector>
 
 class Scene
@@ -13,6 +15,7 @@ private:
 public:
     std::string name;
     std::vector<GameObject*> game_objects = {&cam};
+    SkyBox skybox;
     Camera cam;
     void addGameObject(GameObject *go)
     {

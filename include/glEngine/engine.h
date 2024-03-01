@@ -23,7 +23,7 @@ GLFWwindow *window;
 
 std::vector<Scene*> scenes;
 Scene* current_scene;
-
+Shader* skybox_shader;
 uint32_t WINDOW_WIDTH = 1280;
 uint32_t WINDOW_HEIGHT = 720;
 const bool ENABLE_VSYNC = true;
@@ -49,6 +49,53 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
         firstMouse = false;
     }
 }
+
+unsigned int skyboxVAO;
+unsigned int skyboxVBO;
+float skyboxVertices[108] = {
+    // positions          
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+    1.0f, -1.0f, -1.0f,
+    1.0f, -1.0f, -1.0f,
+    1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    1.0f, -1.0f, -1.0f,
+    1.0f, -1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f, -1.0f,
+    1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,
+    1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+    1.0f,  1.0f, -1.0f,
+    1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+    1.0f, -1.0f, -1.0f,
+    1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+    1.0f, -1.0f,  1.0f
+};
 
 std::vector<DirectionalLight*> dirLights;
 std::vector<PointLight*> pointLights;
@@ -177,6 +224,16 @@ void initRenderer()
     glEnable(GL_MULTISAMPLE);
     // glEnable(GL_CULL_FACE);
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    skybox_shader = new Shader("shaders/skybox.vert", "shaders/skybox.frag");
 }
 void addScene(std::string scene_name)
 {
@@ -204,6 +261,23 @@ void setCurrentScene(std::string scene_name)
     }
 }
 
+void renderSkybox()
+{
+    skybox_shader->use();
+    skybox_shader->setMat4("view", glm::mat4(glm::mat3(current_scene->cam.getViewMatrix())));
+    skybox_shader->setMat4("projection", glm::perspective(glm::radians(current_scene->cam.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f));
+
+    glDepthFunc(GL_LEQUAL);
+    
+    glBindVertexArray(skyboxVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, current_scene->skybox.getID());
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    
+    glDepthFunc(GL_LESS);
+}
+
 void mainLoop()
 {
     while (!glfwWindowShouldClose(window))
@@ -219,7 +293,7 @@ void mainLoop()
         lastY = yp;
         mouse_moved = true;
 
-        glClearColor(0.5f, 0.8f, 0.9f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         std::vector<GameObject*> gos = current_scene->game_objects;
@@ -246,12 +320,19 @@ void mainLoop()
                 if(PointLight* p = dynamic_cast<PointLight*>(gos[i]->components[j]))
                     temp2.push_back(p);
             }
-            
+        }
+
+        dirLights = temp;
+        pointLights = temp2;
+
+        for (unsigned int i = 0; i < gos.size(); i++)
+        {
             if(gos[i]->model != nullptr)
                 render(gos[i]);
         }
-        dirLights = temp;
-        pointLights = temp2;
+
+        renderSkybox();
+
 
         if(mouse_moved)
         {

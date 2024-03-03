@@ -162,9 +162,9 @@ void render(GameObject* go)
 
         for (int dirL = 0; dirL < dirLights.size(); dirL++)
         {
+
             mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].direction", dirLights[dirL]->direction);
 
-            mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].ambient", dirLights[dirL]->ambient);
             mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].diffuse", dirLights[dirL]->diffuse);
             mod->meshes[i].shader.setVec3("dirLights[" + std::to_string(dirL) + "].specular", dirLights[dirL]->specular);
         }
@@ -176,10 +176,14 @@ void render(GameObject* go)
             mod->meshes[i].shader.setFloat("pointLights[" + std::to_string(pointL) + "].linear", pointLights[pointL]->linear);
             mod->meshes[i].shader.setFloat("pointLights[" + std::to_string(pointL) + "].quadratic", pointLights[pointL]->quadratic);
 
-            mod->meshes[i].shader.setVec3("pointLights[" + std::to_string(pointL) + "].ambient", pointLights[pointL]->ambient);
             mod->meshes[i].shader.setVec3("pointLights[" + std::to_string(pointL) + "].diffuse", pointLights[pointL]->diffuse);
             mod->meshes[i].shader.setVec3("pointLights[" + std::to_string(pointL) + "].specular", pointLights[pointL]->specular);
         }
+
+        mod->meshes[i].shader.setInt("nr_point_lights", pointLights.size());
+        mod->meshes[i].shader.setInt("nr_directional_lights", dirLights.size());
+
+        mod->meshes[i].shader.setVec3("ambient_light", current_scene->skybox.getAmbientLight());
         
 
         mod->meshes[i].shader.setFloat("material.shininess", 32.0f);

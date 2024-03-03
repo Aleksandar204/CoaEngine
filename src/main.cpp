@@ -25,15 +25,15 @@ class FreeCam : public Component
 
     void Start() override
     {
-        game_object->translateGlobal(glm::vec3(0.0f,2.0f,2.0f));
+        game_object->translateGlobal(glm::vec3(0.0f,1.0f,2.0f));
     }
 
     void Update() override
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            game_object->translateLocal(glm::vec3(0.0f,0.0f, getDeltaTime() * -speed));
+            game_object->translateGlobal(glm::normalize(glm::vec3(game_object->getGlobalForward().x, 0.0f, game_object->getGlobalForward().z)) * glm::vec3(getDeltaTime()*speed));
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            game_object->translateLocal(glm::vec3(0.0f,0.0f, getDeltaTime() * speed));
+            game_object->translateGlobal(glm::normalize(glm::vec3(game_object->getGlobalForward().x, 0.0f, game_object->getGlobalForward().z)) * glm::vec3(getDeltaTime()*-speed));
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             game_object->translateLocal(glm::vec3(getDeltaTime() * -speed,0.0f,0.0f));
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
@@ -52,7 +52,7 @@ class FreeCam : public Component
         float mousemovex = mouse_delta_y * sensitivity;
         float mousemovey = -mouse_delta_x * sensitivity;
 
-        // Create quaternions for x and y rotations
+        // Create quaternions for x and y rotations - very hacky and buggy way of doing this, should be replaced once I figure out quaternions
         glm::quat xRotation = glm::angleAxis(glm::radians(mousemovex), glm::vec3(1.0f, 0.0f, 0.0f));
         glm::quat yRotation = glm::angleAxis(glm::radians(mousemovey), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -106,16 +106,21 @@ int main()
         shrek->addChild(c);
         c->addComponent(new PointLight());
 
-        GameObject* grass = new GameObject(glm::vec3(3.0f,0.51f,3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
+        GameObject* grass = new GameObject(glm::vec3(3.0f,0.51f,3.0f),glm::vec3(0.0f,180.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
         grass->model = new Model("models/ground/grass.obj");
         current_scene->addGameObject(grass);
+
+        GameObject* crate = new GameObject(glm::vec3(-3.5f,0.51f,-3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.5f,0.5f,0.5f));
+        crate->model = new Model("models/container/untitled.obj");
+        current_scene->addGameObject(crate);
 
         GameObject* sun = new GameObject();
         sun->addComponent(new DirectionalLight());
         current_scene->addGameObject(sun);
 
-        current_scene->cam.modelMatrix = glm::translate(current_scene->cam.modelMatrix, glm::vec3(0.0f,0.0f,0.0f));
         current_scene->cam.addComponent(new FreeCam());
+
+        current_scene->skybox.setAmbientLight(glm::vec3(0.1f,0.1f,0.2f));
 
         mainLoop();
         cleanup();
